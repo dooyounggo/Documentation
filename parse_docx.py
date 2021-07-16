@@ -27,6 +27,25 @@ for tbl in tables:
             print(cell.text)
 tbl_style = tables[0]
 
+doc_regbank = docx.Document('dewarp_m2m_regbank.docx')
+paragraphs = doc_regbank.paragraphs
+tables = doc_regbank.tables
+
+# for i, par in enumerate(paragraphs):
+#     if par.text:
+#         print(i)
+#         print(par.text)
+#         print(par._p.xml)
+
+for tbl in tables:
+    rows = tbl.rows
+    for i in range(len(rows)):
+        cells = tbl.row_cells(i)
+        for cell in cells:
+            for obj in cell._tc.p_lst[0]:
+                if type(obj) is type(docx.oxml.shared.OxmlElement('w:hyperlink')):
+                    print(obj[0].text.upper())
+
 doc_demo = docx.Document('demo.docx')
 paragraphs = doc_demo.paragraphs
 tables = doc_demo.tables
@@ -40,7 +59,7 @@ for i, par in enumerate(paragraphs):
         c.set(docx.oxml.shared.qn('w:val'), 'FF8822')
         rPr.append(c)
         par._p.r_lst[0].insert(0, rPr)
-        print(par._p.xml)
+        # print(par._p.xml)
 paragraphs[1]._p._insert_pPr(par_style._p.pPr)
 paragraphs[1]._p.r_lst[0].remove(paragraphs[1]._p.r_lst[0].rPr)
 paragraphs[1]._p.r_lst[0]._insert_rPr(par_style._p.r_lst[0].rPr)
@@ -65,11 +84,15 @@ for tr in tbl_style._tbl.tr_lst:  # Clear IDs
             par.attrib.clear()
             for r in par.r_lst:
                 r.attrib.clear()
+                print(r.text)
 
+new_row = tbl_style._tbl.tr_lst[-1].__copy__()
+tbl_style._tbl.append(new_row)
 cell_run = tbl_style._tbl.tr_lst[1].tc_lst[0].p_lst[0].r_lst[0]
-cell_run.remove(cell_run.t_lst[0])
 for i, c in enumerate(tbl_style._tbl.tr_lst[2].tc_lst):
+    c.p_lst[0].remove(c.p_lst[0].r_lst[0])
     new_run = cell_run.__copy__()
+    new_run.remove(new_run.t_lst[0])
     new_run.add_t(str(3.14*(i + 1)))
     c.p_lst[0]._insert_r(new_run)
 
@@ -77,22 +100,3 @@ doc_demo._body._body.append(tbl_style._tbl)
 # print(doc_demo._body._body.xml)
 
 doc_demo.save('demo_style.docx')
-
-doc_regbank = docx.Document('dewarp_m2m_regbank.docx')
-paragraphs = doc_regbank.paragraphs
-tables = doc_regbank.tables
-
-# for i, par in enumerate(paragraphs):
-#     if par.text:
-#         print(i)
-#         print(par.text)
-#         print(par._p.xml)
-
-# for tbl in tables:
-#     rows = tbl.rows
-#     for i in range(len(rows)):
-#         cells = tbl.row_cells(i)
-#         for cell in cells:
-#             print(cell.text)
-#
-# print(tables[3]._tbl.xml)
