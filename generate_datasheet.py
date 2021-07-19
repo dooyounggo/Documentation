@@ -94,7 +94,10 @@ for i, obj in enumerate(body_regbank):
             tbl_cnt = 0
 reg_idx = 0
 for tbl in doc_regbank.tables:
-    if tbl._tbl.tr_lst[0].tc_lst[0].p_lst[0].r_lst[0].text.startswith('Address'):
+    text = ''
+    for r in tbl._tbl.tr_lst[0].tc_lst[0].p_lst[0].r_lst:
+        text += r.text
+    if text.startswith('Address'):
         for row in tbl._tbl.tr_lst[1:]:
             reset = ''
             for r in row.tc_lst[3].p_lst[0].r_lst:
@@ -148,19 +151,40 @@ for reg in registers:
             text = ''
             for r in cell.p_lst[0].r_lst:
                 text += r.text
-            if i == 0:
-                new_cell = row_new.tc_lst[0]
-            else:
-                new_cell = cell_field.__copy__()
-            new_cell.tcPr.grid_span = gs
-            new_cell.tcPr.tcW.set(docx.oxml.shared.qn('w:w'), str(sum(TBL_WIDTHS[i:i + gs])))
-            i += gs
             if text:
+                if i == 0:
+                    new_cell = row_new.tc_lst[0]
+                else:
+                    new_cell = cell_field.__copy__()
+                new_cell.tcPr.grid_span = gs
+                new_cell.tcPr.tcW.set(docx.oxml.shared.qn('w:w'), str(sum(TBL_WIDTHS[i:i + gs])))
+                i += gs
                 new_run = docx.oxml.shared.OxmlElement('w:r')
                 new_run.text = text
                 new_cell.p_lst[0]._insert_r(new_run)
-            if i > 0:
-                row_new.append(new_cell)
+                if i > 0:
+                    row_new.append(new_cell)
+            else:
+                # for j in range(i, i + gs):
+                #     if j == 0:
+                #         new_cell = row_new.tc_lst[0]
+                #     else:
+                #         new_cell = cell_field.__copy__()
+                #     new_cell.tcPr.grid_span = 1
+                #     new_cell.tcPr.tcW.set(docx.oxml.shared.qn('w:w'), str(TBL_WIDTHS[j]))
+                #     if i > 0:
+                #         row_new.append(new_cell)
+                #     i += 1
+                if i == 0:
+                    new_cell = row_new.tc_lst[0]
+                else:
+                    new_cell = cell_field.__copy__()
+                new_cell.tcPr.grid_span = gs
+                new_cell.tcPr.tcW.set(docx.oxml.shared.qn('w:w'), str(sum(TBL_WIDTHS[i:i + gs])))
+                i += gs
+                if i > 0:
+                    row_new.append(new_cell)
+
     body_style.append(new_tbl)
     body_style.append(par_blank.__copy__())
 
@@ -175,9 +199,9 @@ for reg in registers:
         bits = ''
         for r in row.tc_lst[0].p_lst[0].r_lst:
             bits += r.text
-        if ':' not in bits:
-            bits = bits + ':' + bits
-        new_row.tc_lst[0].p_lst[0].r_lst[0].text = bits
+        # if ':' not in bits:
+        #     bits = bits + ':' + bits
+        new_row.tc_lst[0].p_lst[0].r_lst[0].text = bits.rstrip()
 
         name = ''
         for p in row.tc_lst[1].p_lst:
