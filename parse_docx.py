@@ -89,7 +89,7 @@ for tr in tbl_style._tbl.tr_lst:  # Clear IDs
 new_row = tbl_style._tbl.tr_lst[-1].__copy__()
 tbl_style._tbl.append(new_row)
 cell_run = tbl_style._tbl.tr_lst[1].tc_lst[0].p_lst[0].r_lst[0]
-for i, c in enumerate(tbl_style._tbl.tr_lst[2].tc_lst):
+for i, c in enumerate(tbl_style._tbl.tr_lst[1].tc_lst):
     c.p_lst[0].remove(c.p_lst[0].r_lst[0])
     new_run = cell_run.__copy__()
     new_run.remove(new_run.t_lst[0])
