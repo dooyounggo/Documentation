@@ -9,3 +9,8 @@
   - Save the file as regbank.docx with the recent docx format (The original Magillem-generated document may not be opened correctly).
   - Run [generate_datasheet.py](https://github.com/dooyounggo/Documentation/blob/master/generate_datasheet.py)
   - Check datasheet.docx.
+
+### Packages
+  - Python: 3.8
+  - numpy: 1.20.2
+  - python-docx: 0.8.11 (installed using pip)
