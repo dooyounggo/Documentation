@@ -107,7 +107,13 @@ def generate_datasheet(regbank_path, style_path, output_path):
                 reset = ''
                 for r in row.tc_lst[3].p_lst[0].r_lst:
                     reset += r.text
-                registers[reg_idx]['reset'] = reset.rstrip()
+                if reset.rstrip():
+                    val = reset.split('x')[1].rstrip()
+                    # while val[0] == '0' and len(val) > 1:
+                    #     val = val[1:]
+                    registers[reg_idx]['reset'] = '0x' + val
+                else:
+                    registers[reg_idx]['reset'] = '0x00000000'
                 reg_idx += 1
 
     # Generate datasheet
@@ -126,11 +132,11 @@ def generate_datasheet(regbank_path, style_path, output_path):
             for p in row.tc_lst[3].p_lst:
                 access += p.r_lst[0].text
         if 'R' in access and 'W' in access:
-            new_row.tc_lst[2].p_lst[0].r_lst[0].text = 'RW'
+            new_row.tc_lst[2].p_lst[0].r_lst[0].text = 'R/W'
         elif 'RO' in access:
-            new_row.tc_lst[2].p_lst[0].r_lst[0].text = 'RO'
+            new_row.tc_lst[2].p_lst[0].r_lst[0].text = 'R'
         elif 'WO' in access:
-            new_row.tc_lst[2].p_lst[0].r_lst[0].text = 'WO'
+            new_row.tc_lst[2].p_lst[0].r_lst[0].text = 'W'
 
         new_row.tc_lst[3].p_lst[0].r_lst[0].text = reg['reset'].replace(' ', '_')
 
@@ -223,7 +229,12 @@ def generate_datasheet(regbank_path, style_path, output_path):
                     if j > 0:
                         access += '\n'
                     access += text.rstrip()
-            new_row.tc_lst[2].p_lst[0].r_lst[0].text = access
+            if 'RW' in access:
+                new_row.tc_lst[2].p_lst[0].r_lst[0].text = 'R/W'
+            elif 'RO' in access:
+                new_row.tc_lst[2].p_lst[0].r_lst[0].text = 'R'
+            elif 'WO' in access:
+                new_row.tc_lst[2].p_lst[0].r_lst[0].text = 'W'
 
             reset = ''
             for j, p in enumerate(row.tc_lst[4].p_lst):
@@ -231,7 +242,13 @@ def generate_datasheet(regbank_path, style_path, output_path):
                     reset += '_'
                 for r in p.r_lst:
                     reset += r.text
-            new_row.tc_lst[3].p_lst[0].r_lst[0].text = reset.rstrip().replace(' ', '_')
+            if reset.rstrip():
+                val = reset.split('x')[1].rstrip().replace(' ', '_')
+                while (val[0] == '0' or val[0] == '_') and len(val) > 1:
+                    val = val[1:]
+                new_row.tc_lst[3].p_lst[0].r_lst[0].text = '0x' + val
+            else:
+                new_row.tc_lst[3].p_lst[0].r_lst[0].text = '0x0'
 
             desc = ''
             for j, p in enumerate(row.tc_lst[2].p_lst):
