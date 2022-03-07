@@ -108,12 +108,12 @@ def generate_datasheet(regbank_path, style_path, output_path):
                 for r in row.tc_lst[3].p_lst[0].r_lst:
                     reset += r.text
                 if reset.rstrip():
-                    val = reset.split('x')[1].rstrip()
-                    # while val[0] == '0' and len(val) > 1:
-                    #     val = val[1:]
+                    val = reset.split('x')[1].rstrip().replace(' ', '_')
+                    while (val[0] == '0' or val[0] == '_') and len(val) > 1:
+                        val = val[1:]
                     registers[reg_idx]['reset'] = '0x' + val
                 else:
-                    registers[reg_idx]['reset'] = '0x00000000'
+                    registers[reg_idx]['reset'] = '0x0'
                 reg_idx += 1
 
     # Generate datasheet
@@ -138,7 +138,7 @@ def generate_datasheet(regbank_path, style_path, output_path):
         elif 'WO' in access:
             new_row.tc_lst[2].p_lst[0].r_lst[0].text = 'W'
 
-        new_row.tc_lst[3].p_lst[0].r_lst[0].text = reg['reset'].replace(' ', '_')
+        new_row.tc_lst[3].p_lst[0].r_lst[0].text = reg['reset']
 
         desc = ''
         for r in reg['overview'].tr_lst[0].tc_lst[1].p_lst[0].r_lst:
