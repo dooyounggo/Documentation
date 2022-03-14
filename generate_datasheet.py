@@ -108,7 +108,7 @@ def generate_datasheet(regbank_path, style_path, output_path):
                 for r in row.tc_lst[3].p_lst[0].r_lst:
                     reset += r.text
                 if reset.rstrip():
-                    val = reset.split('x')[1].rstrip().replace(' ', '_')
+                    val = reset.split('x')[1].rstrip().replace(' ', '')
                     while (val[0] == '0' or val[0] == '_') and len(val) > 1:
                         val = val[1:]
                     registers[reg_idx]['reset'] = '0x' + val
@@ -149,7 +149,7 @@ def generate_datasheet(regbank_path, style_path, output_path):
 
         new_name = par_name.__copy__()
         new_name.r_lst[0].text = reg['name'].upper()
-        new_name.r_lst[1].text = '\t' + addr.lstrip(': ')
+        new_name.r_lst[1].text = '\t' + 'REG_BASE_ADDR + ' + addr.lstrip(': ')
         body_style.append(new_name)
 
         new_tbl = tbl_fields.__copy__()
@@ -243,7 +243,7 @@ def generate_datasheet(regbank_path, style_path, output_path):
                 for r in p.r_lst:
                     reset += r.text
             if reset.rstrip():
-                val = reset.split('x')[1].rstrip().replace(' ', '_')
+                val = reset.split('x')[1].rstrip().replace(' ', '')
                 while (val[0] == '0' or val[0] == '_') and len(val) > 1:
                     val = val[1:]
                 new_row.tc_lst[3].p_lst[0].r_lst[0].text = '0x' + val
